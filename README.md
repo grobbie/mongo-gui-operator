@@ -78,7 +78,7 @@ SERVICE_NAME = "demo" # change to your service's name
 
 class DemoCharm(ContentBase):
 
-	def __init__(self, *args):
+  def __init__(self, *args):
     # you need to pass the workload container's name into
     # the parent class' CTOR
     super().__init__(*args, service_name=SERVICE_NAME)
