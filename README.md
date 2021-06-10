@@ -23,9 +23,7 @@ juju add-model testing
 # todo: git
 pushd opi
 charmcraft build
-# todo: currently not a very functional demo!!
 juju deploy ./opi.charm --resource application-image=ubuntu:20.04
-juju deploy redis-k8s --channel edge
 popd
 # set up Mongodb
 git clone https://github.com/balbirthomas/mongodb-operator.git
