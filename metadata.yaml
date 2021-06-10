@@ -1,0 +1,21 @@
+# Copyright 2021 Canonical, Ltd.
+# See LICENSE file for licensing details.
+name: opi
+description: |
+  Demo charm to show functionality of OpI Config Manager.
+summary: |
+  Demo charm to show functionality of OpI Config Manager.
+
+containers:
+  opi:
+    resource: application-image
+
+requires:
+  mongodb:
+    interface: mongodb
+
+resources:
+  application-image:
+    type: oci-image
+    description: |
+      OCI image containing the application to run.
