@@ -19,8 +19,8 @@ microk8s status --wait-ready
 microk8s enable dns storage
 juju bootstrap microk8s micro
 juju add-model testing
-# grab the code, currently not version controlled
-# todo: git
+git clone https://github.com:grobbie/mongo-gui-operator.git
+mv mongo-gui-operator opi
 pushd opi
 charmcraft build
 juju deploy ./opi.charm --resource application-image=ubuntu:20.04
