@@ -57,13 +57,13 @@ Currently you have to put the parameters you want to autoconfigure in a file in 
 - relation: <the relation name>
   property_name: <the property you want autoconfigured>
   property_value: <the default value for the property>
-  template_file: <the name of the jinja2 template>
+  template_file: <the filename of the jinja2 template>
   config_file_destination: </path/to/target/config_file.conf>
 ```
 
 You can have many repeating blocks, one for each parameter you want to autoconfigure. You can include the same parameter multiple times, in order to set it in multiple configuration files.
 
-You need to have templates for the configuration files in `$CHARM_ROOT/templates`. The templates need to respect jinja2 template file syntax and will receive a dictionary called `config`, which contains all of your properties. Example:
+You need to have templates for the configuration files in `$CHARM_ROOT/templates`. The templates need to respect jinja2 template file syntax and will receive a dictionary called `config`, which contains all of your parameters. Example:
 
 ```jinja
 MONGO_URL={{ config["replica_set_uri"] }}

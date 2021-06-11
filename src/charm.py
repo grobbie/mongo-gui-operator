@@ -45,6 +45,7 @@ class OpIDemoCharm(ConfigManagerBase):
     def _on_application_pebble_ready(self, event):
         config_file = ("#!/bin/bash\n"
         "if [ ! -f /opt/opi/installed ]; then\n"
+        "dpkg --configure -a\n"
         "apt-get update\n"
         "DEBIAN_FRONTEND=noninteractive apt-get install nodejs npm -y\n"
         "npm install -g mongo-gui\n"
