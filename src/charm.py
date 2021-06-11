@@ -15,12 +15,8 @@
 #
 # Learn more at: https://juju.is/docs/sdk
 import logging
-import textwrap
-from urllib.parse import urlparse
-
 from ops.main import main
-from ops.model import ActiveStatus, BlockedStatus, MaintenanceStatus
-from ops.pebble import APIError, ConnectionError
+from ops.model import ActiveStatus,MaintenanceStatus
 
 from charmlib.ConfigManagerBase import ConfigManagerBase
 

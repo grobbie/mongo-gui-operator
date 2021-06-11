@@ -26,7 +26,6 @@ from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
 
-
 class ConfigManagerBase(CharmBase):
 
     _cb_stored = StoredState()
