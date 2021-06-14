@@ -97,7 +97,6 @@ class ConfigManagerBase(CharmBase):
             configured_file = t.render(config=props)
             for container in self.unit.containers:
                 c = self.unit.get_container(container)
-                #c = self.unit.get_container(self.service_name)
                 c.push(config_file["config_file_destination"], configured_file, make_dirs=True, permissions=0o755)
 
     def _contentlib_on_relation_changed(self, event):

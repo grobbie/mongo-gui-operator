@@ -15,5 +15,5 @@
 - relation: mongodb
   property_name: replica_set_uri
   property_value: mongodb
-  template_file: mongo-gui.sh.jinja
-  config_file_destination: "/opt/opi/mongo-gui.sh"
+  template_file: mongo-gui.env.sh.jinja
+  config_file_destination: "/opt/opi/mongo-gui.env.sh"

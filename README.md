@@ -84,8 +84,8 @@ class DemoCharm(ContentBase): # your charm must inherit from ContentBase
     # your charm needs to handle this event:
     self.evt_config_changed += self._on_config_rewritten
 
-  def _on_config_rewritten(self, event, eargs):
-    # just reload or restart your app in here
+  def _on_config_rewritten(self, sender, eargs):
+    # reload or restart your app in here
     ...
 ```
 That's it, nothing else to do!
