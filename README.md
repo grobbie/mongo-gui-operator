@@ -75,30 +75,17 @@ You'll need your charm to inherit from the `OpI` library class `ContentBase`:
 # import ContentBase
 from charmlib.ContentBase import ContentBase
 ...
-SERVICE_NAME = "demo" # change this to your service's name
 
 class DemoCharm(ContentBase): # your charm must inherit from ContentBase
 
   def __init__(self, *args):
-    # you need to pass the workload container's name into
-    # the parent class' CTOR
-    super().__init__(*args, service_name=SERVICE_NAME)
-```
-That's it, nothing else to do here!
+    super().__init__(*args)
 
-## Limitations
-Your pebble layer and service must have the name you defined in the constant `SERVICE_NAME`. Example:
+    # your charm needs to handle this event:
+    self.evt_config_changed += self._on_config_rewritten
 
-```json
-{
-    "summary": "pebble config layer",
-    "description": "pebble config layer",
-    "services": {
-        "<your service name here>": {
-            "override": "replace",
-            "command": "somecommand",
-            "startup": "enabled"
-        }
-    },
-}
+  def _on_config_rewritten(self, event, eargs):
+    # just reload or restart your app in here
+    ...
 ```
+That's it, nothing else to do!

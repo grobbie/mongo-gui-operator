@@ -39,11 +39,11 @@ class ConfigManagerBase(CharmBase):
             return d
         return os.environ.get('CHARM_DIR')
 
-    def __init__(self, *args, service_name):
+    def __init__(self, *args):
         """CTOR"""
         super().__init__(*args)
 
-        self._service_name = service_name
+        self.evt_config_changed = ConfigRewrittenEvent()
 
         # read in properties to watch. StoredState can only handle simple types,
         # so first convert the YAML to a DataFrame and then serialize the DataFrame to JSON
@@ -95,9 +95,10 @@ class ConfigManagerBase(CharmBase):
                         "templates/{0}".format(tf)), 'r')
             t = Template(file.read())
             configured_file = t.render(config=props)
-            container = self.unit.get_container(self.service_name)
-            container.push(config_file["config_file_destination"],
-                           configured_file, make_dirs=True, permissions=0o755)
+            for container in self.unit.containers:
+                c = self.unit.get_container(container)
+                #c = self.unit.get_container(self.service_name)
+                c.push(config_file["config_file_destination"], configured_file, make_dirs=True, permissions=0o755)
 
     def _contentlib_on_relation_changed(self, event):
         """This method is run when a watched relation changed event fires"""
@@ -123,10 +124,7 @@ class ConfigManagerBase(CharmBase):
                     self._config_changed = True
         if self._config_changed:
             self._cb_stored.config_files = cb_stored.to_json()
-            container = self.unit.get_container(self.service_name)
-            if container.get_service(self.service_name).is_running():
-                container.stop(self.service_name)
-            container.start(self.service_name)
+            self.evt_config_changed(self)
 
     def getconfig_changed(self):
         config_changed = self._config_changed
@@ -136,10 +134,31 @@ class ConfigManagerBase(CharmBase):
 
     config_changed = property(getconfig_changed)
 
-    def getservice_name(self):
-        return self._service_name
+    def getevt_config_changed(self):
+        return self._evt_config_changed
 
-    def setservice_name(self, service_name):
-        self._service_name = service_name
+    def setevt_config_changed(self, config_changed):
+        self._evt_config_changed = config_changed
 
-    service_name = property(getservice_name)
+    evt_config_changed = property(getevt_config_changed, setevt_config_changed)
+
+class ConfigRewrittenEvent(object):
+
+    def __init__(self):
+        self.handlers = []
+
+    def add(self, handler):
+        self.handlers.append(handler)
+        return self
+    
+    def remove(self, handler):
+        self.handlers.remove(handler)
+        return self
+    
+    def fire(self, sender, earg=None):
+        for handler in self.handlers:
+            handler(sender, earg)
+    
+    __iadd__ = add
+    __isub__ = remove
+    __call__ = fire

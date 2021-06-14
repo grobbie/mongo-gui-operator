@@ -32,12 +32,10 @@ class OpIDemoCharm(ConfigManagerBase):
 
     def __init__(self, *args):
         """CTOR"""
-        super().__init__(*args, service_name=SERVICE_NAME)
+        super().__init__(*args)
         self.framework.observe(self.on.opi_pebble_ready,
                                self._on_application_pebble_ready)
-
-        self.framework.observe(self.on.config_changed,
-                               self._on_config_changed)
+        self.evt_config_changed += self._on_config_rewritten
 
     def _on_application_pebble_ready(self, event):
         """This method is executed when the pebble_ready event fires"""
@@ -61,12 +59,8 @@ class OpIDemoCharm(ConfigManagerBase):
         event.workload.push("/opt/opi/run.sh", config_file, make_dirs=True, permissions=0o755)
         self._restart_application("App Initialized")
 
-    def _on_config_changed(self, event):
-        """This method is executed when the configuration_changed event fires"""
-        if self.config_changed:
-            self._restart_application("Configuration changed")
-        else:
-            event.defer()
+    def _on_config_rewritten(self, sender, eargs):
+        self._restart_application("Configuration changed")
 
     def _opi_layer(self) -> dict:
         """Returns Pebble configuration layer"""
