@@ -19,6 +19,9 @@ microk8s status --wait-ready
 microk8s enable dns storage
 juju bootstrap microk8s micro
 juju add-model testing
+```
+
+```sh
 # get this code
 git clone https://github.com:grobbie/mongo-gui-operator.git
 mv mongo-gui-operator opi
@@ -26,12 +29,18 @@ pushd opi
 charmcraft build
 juju deploy ./opi.charm --resource application-image=ubuntu:20.04
 popd
+```
+
+```sh
 # set up Mongodb
 git clone https://github.com/balbirthomas/mongodb-operator.git
 pushd mongodb-operator
 charmcraft build
 juju deploy ./mongodb.charm --resource mongodb-image=mongo:4.4.1
 popd
+```
+
+```sh
 pushd opi
 microk8s.kubectl logs opi-0 -c charm
 # check the charm is initialised. When it is, you should see output like:
