@@ -49,7 +49,7 @@ microk8s.kubectl logs opi-0 -c charm
 
 # add a relation between our opi charm and mongodb
 juju add-relation opi mongodb
-microk8s.kubectl exec opi-0 -n testing -c opi -- cat /opt/opi/mongo-gui.sh
+microk8s.kubectl exec opi-0 -n testing -c opi -- cat /opt/opi/mongo-gui.env.sh
 # you should see a config file with sensible relation output:
 ## MONGO_URL=mongodb://mongodb-0.mongodb-endpoints:27017/
 microk8s.kubectl port-forward -n testing opi-0 4321:4321
