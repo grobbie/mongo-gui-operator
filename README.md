@@ -41,7 +41,6 @@ popd
 ```
 
 ```sh
-pushd opi
 microk8s.kubectl logs opi-0 -c charm
 # check the charm is initialised. When it is, you should see output like:
 ## starting containeragent unit command
@@ -56,7 +55,6 @@ microk8s.kubectl port-forward -n testing opi-0 4321:4321
 # see a freeware mongodb database management UI
 firefox http://localhost:4321/
 # awesome.
-popd
 ```
 
 # How do I use it?
