@@ -73,6 +73,7 @@ You can have many repeating blocks, one for each parameter you want to autoconfi
 You need to have templates for the configuration files in `$CHARM_ROOT/templates`. The templates need to respect jinja2 template file syntax and will receive a dictionary called `config`, which contains all of your parameters. Example:
 
 ```jinja
+{# this file goes in $CHARM_ROOT/templates/ #}
 MONGO_URL={{ config["replica_set_uri"] }}
 ```
 
