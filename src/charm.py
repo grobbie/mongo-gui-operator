@@ -31,6 +31,7 @@ class OpIDemoCharm(ConfigManagerBase):
     _pebble_ready = False
 
     def __init__(self, *args):
+        """CTOR"""
         super().__init__(*args, service_name=SERVICE_NAME)
         self.framework.observe(self.on.opi_pebble_ready,
                                self._on_application_pebble_ready)
@@ -39,6 +40,7 @@ class OpIDemoCharm(ConfigManagerBase):
                                self._on_config_changed)
 
     def _on_application_pebble_ready(self, event):
+        """This method is executed when the pebble_ready event fires"""
         config_file = ("#!/bin/bash\n"
         "if [ ! -f /opt/opi/installed ]; then\n"
         "dpkg --configure -a\n"
@@ -60,6 +62,7 @@ class OpIDemoCharm(ConfigManagerBase):
         self._restart_application("App Initialized")
 
     def _on_config_changed(self, event):
+        """This method is executed when the configuration_changed event fires"""
         if self.config_changed:
             self._restart_application("Configuration changed")
         else:
@@ -80,6 +83,7 @@ class OpIDemoCharm(ConfigManagerBase):
         }
 
     def _restart_application(self, reason):
+        """This method restarts the application in the workload container"""
         self.unit.status = MaintenanceStatus(
             f'Configuring the application: {reason}')
         application_container = self.unit.get_container(SERVICE_NAME)

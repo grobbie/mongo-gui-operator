@@ -40,6 +40,7 @@ class ConfigManagerBase(CharmBase):
         return os.environ.get('CHARM_DIR')
 
     def __init__(self, *args, service_name):
+        """CTOR"""
         super().__init__(*args)
 
         self._service_name = service_name
@@ -67,6 +68,8 @@ class ConfigManagerBase(CharmBase):
 
     @environmentfilter
     def regex_replace(environment, s, find, replace):
+        """Jinja2 custom function. 
+        This one implements regular expression based replace"""
         try:
             pattern = re.compile(find)
             return pattern.sub(replace, s)
@@ -77,6 +80,7 @@ class ConfigManagerBase(CharmBase):
     FILTERS["regex_replace"] = regex_replace
 
     def _regenerate_config(self, config_files: DataFrame):
+        """This method regenerates the application configuration files"""
         for index, config_file in config_files.iterrows():
             # first, find all properties for the config file in stored state
             cb_stored = pandas.read_json(self._cb_stored.config_files)
@@ -96,6 +100,7 @@ class ConfigManagerBase(CharmBase):
                            configured_file, make_dirs=True, permissions=0o755)
 
     def _contentlib_on_relation_changed(self, event):
+        """This method is run when a watched relation changed event fires"""
         # identify config files affected by the relation
         cb_stored = pandas.read_json(self._cb_stored.config_files)
         for key in event.relation.data[event.unit]:
