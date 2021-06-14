@@ -41,7 +41,7 @@ popd
 ```
 
 ```sh
-microk8s.kubectl logs opi-0 -c charm
+microk8s.kubectl logs opi-0 -c charm -n testing
 # check the charm is initialised. When it is, you should see output like:
 ## starting containeragent unit command
 ## containeragent unit "unit-opi-0" start (2.9.3 [gc])
