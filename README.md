@@ -72,11 +72,12 @@ MONGO_URL={{ config["replica_set_uri"] }}
 You'll need your charm to inherit from the `OpI` library class `ContentBase`:
 
 ```python
+# import ContentBase
 from charmlib.ContentBase import ContentBase
 ...
-SERVICE_NAME = "demo" # change to your service's name
+SERVICE_NAME = "demo" # change this to your service's name
 
-class DemoCharm(ContentBase):
+class DemoCharm(ContentBase): # your charm must inherit from ContentBase
 
   def __init__(self, *args):
     # you need to pass the workload container's name into
@@ -86,7 +87,6 @@ class DemoCharm(ContentBase):
 That's it, nothing else to do here!
 
 ## Limitations
-
 Your pebble layer and service must have the name you defined in the constant `SERVICE_NAME`. Example:
 
 ```json
