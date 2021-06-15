@@ -86,10 +86,8 @@ class ConfigManagerBase(CharmBase):
         for index, config_file in config_files.iterrows():
             # first, find all properties for the config file in stored state
             cb_stored = pandas.read_json(self._cb_stored.config_files)
-            all_properties = cb_stored[cb_stored["relation"].eq(
-                config_file["relation"])]
             props = dict()
-            for index, property in all_properties.iterrows():
+            for index, property in cb_stored.iterrows():
                 props[property["property_name"]] = property["property_value"]
             props_json = json.dumps(props)
             tf = config_file["template_file"]
@@ -110,26 +108,41 @@ class ConfigManagerBase(CharmBase):
         """This method is run when a watched relation changed event fires"""
         # identify config files affected by the relation
         cb_stored = pandas.read_json(self._cb_stored.config_files)
-        for key in event.relation.data[event.unit]:
-            # search the config_files dictionary for the relation and config variable,
-            # then update it in the stored state,
-            # then trigger a regeneration of the config file
-            # repeat for all affected config files
-            subset = cb_stored[cb_stored["relation"].eq(event.relation.name)]
-            subset = subset[subset["property_name"].eq(key)]
-            if subset["property_name"].count() > 0:
-                for index, config_file in subset.iterrows():
-                    # update the stored state for the given property
-                    subset.at[index, "property_value"] = event.relation.data[event.unit].get(
-                        key)
-                    cb_stored.update(subset)
-                    self._cb_stored.config_files = cb_stored.to_json()
-                    # do stuff to regenerate the associated configuration file
-                    self._regenerate_config(cb_stored)
-                    # notify the workload it should restart or refresh itself
-                    self._config_changed = True
+        try:
+            for key in event.relation.data[event.unit]:
+                # search the config_files dictionary for the relation and config variable,
+                # then update it in the stored state,
+                # then trigger a regeneration of the config file
+                # repeat for all affected config files
+                subset = cb_stored[cb_stored["relation"].eq(event.relation.name)]
+                subset = subset[subset["property_name"].eq(key)]
+                if subset["property_name"].count() > 0:
+                    for index, config_file in subset.iterrows():
+                        # update the stored state for the given property
+                        subset.at[index, "property_value"] = event.relation.data[event.unit].get(
+                            key)
+                        cb_stored.update(subset)
+                        # notify the workload it should restart or refresh itself
+                        self._config_changed = True
+        except Exception as e:
+            for key in event.relation.data[event.app]:
+                # search the config_files dictionary for the relation and config variable,
+                # then update it in the stored state,
+                # then trigger a regeneration of the config file
+                # repeat for all affected config files
+                subset = cb_stored[cb_stored["relation"].eq(event.relation.name)]
+                subset = subset[subset["property_name"].eq(key)]
+                if subset["property_name"].count() > 0:
+                    for index, config_file in subset.iterrows():
+                        # update the stored state for the given property
+                        subset.at[index, "property_value"] = event.relation.data[event.app].get(
+                            key)
+                        cb_stored.update(subset)
+                        self._cb_stored.config_files = cb_stored.to_json()
+                        # notify the workload it should restart or refresh itself
+                        self._config_changed = True
         if self._config_changed:
-            self._cb_stored.config_files = cb_stored.to_json()
+            self._regenerate_config(cb_stored)
             self.evt_config_changed(self)
 
     def getconfig_changed(self):
