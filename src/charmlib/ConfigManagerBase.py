@@ -18,7 +18,7 @@ import pandas
 import re
 import yaml
 
-from ops.charm import CharmBase
+from ops.charm import CharmBase, ActionEvent
 from ops.framework import StoredState
 from jinja2 import Template
 from jinja2.filters import FILTERS, environmentfilter
@@ -67,6 +67,8 @@ class ConfigManagerBase(CharmBase):
                     ev), self._configbase_on_relation_changed)
             elif "pebble_ready" in ev:
                 self.framework.observe(self.on.events().get(ev), self._configbase_on_pebble_ready)
+            elif "configure_action" in ev:
+                self.framework.observe(self.on.events().get(ev), self._configbase_on_configure_action)
 
     @environmentfilter
     def regex_replace(environment, s, find, replace):
@@ -99,6 +101,25 @@ class ConfigManagerBase(CharmBase):
                 c = self.unit.get_container(container)
                 c.push(config_file["config_file_destination"], configured_file, make_dirs=True, permissions=0o755)
 
+    def _configbase_on_configure_action(self, event: ActionEvent):
+        """an intrinsic juju action handler that allows an admin to set 
+            the value of an arbitrary configuration key.
+            You need to include the action in your actions.yaml file if 
+            you want to use it
+        """
+        key = event.params["key"]
+        val = event.params["value"]
+        cb_stored = pandas.read_json(self._cb_stored.config_files)
+        subset = cb_stored[cb_stored["property_name"].eq(key)]
+        for index, config_file in subset.iterrows():
+            subset.at[index, "property_value"] = val
+            cb_stored.update(subset)
+            self._config_changed = True
+            self._cb_stored.config_files = cb_stored.to_json()
+        if self.config_changed:
+            self._regenerate_config(cb_stored)
+            self.evt_config_changed(self)
+    
     def _configbase_on_pebble_ready(self, event):
         """Initialize all application config files"""
         cb_stored = pandas.read_json(self._cb_stored.config_files)
@@ -122,6 +143,7 @@ class ConfigManagerBase(CharmBase):
                         subset.at[index, "property_value"] = event.relation.data[event.unit].get(
                             key)
                         cb_stored.update(subset)
+                        self._cb_stored.config_files = cb_stored.to_json()
                         # notify the workload it should restart or refresh itself
                         self._config_changed = True
         except Exception as e:
