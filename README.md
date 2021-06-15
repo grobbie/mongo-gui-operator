@@ -80,11 +80,11 @@ MONGO_URL={{ config["replica_set_uri"] }}
 You'll need your charm to inherit from the `OpI` library class `ContentBase`:
 
 ```python
-# import ContentBase
-from charmlib.ContentBase import ContentBase
+# import ConfigManagerBase
+from charmlib.ConfigManagerBase import ConfigManagerBase
 ...
 
-class DemoCharm(ContentBase): # your charm must inherit from ContentBase
+class DemoCharm(ConfigManagerBase): # your charm must inherit from ConfigManagerBase
 
   def __init__(self, *args):
     super().__init__(*args)
