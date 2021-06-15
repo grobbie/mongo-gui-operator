@@ -64,7 +64,9 @@ class ConfigManagerBase(CharmBase):
         for ev in bound_events:
             if "relation_changed" in ev:
                 self.framework.observe(self.on.events().get(
-                    ev), self._contentlib_on_relation_changed)
+                    ev), self._configbase_on_relation_changed)
+            elif "pebble_ready" in ev:
+                self.framework.observe(self.on.events().get(ev), self._configbase_on_pebble_ready)
 
     @environmentfilter
     def regex_replace(environment, s, find, replace):
@@ -99,7 +101,12 @@ class ConfigManagerBase(CharmBase):
                 c = self.unit.get_container(container)
                 c.push(config_file["config_file_destination"], configured_file, make_dirs=True, permissions=0o755)
 
-    def _contentlib_on_relation_changed(self, event):
+    def _configbase_on_pebble_ready(self, event):
+        """Initialize all application config files"""
+        cb_stored = pandas.read_json(self._cb_stored.config_files)
+        self._regenerate_config(cb_stored)
+
+    def _configbase_on_relation_changed(self, event):
         """This method is run when a watched relation changed event fires"""
         # identify config files affected by the relation
         cb_stored = pandas.read_json(self._cb_stored.config_files)
