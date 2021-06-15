@@ -77,7 +77,7 @@ You need to have templates for the configuration files in `$CHARM_ROOT/templates
 MONGO_URL={{ config["replica_set_uri"] }}
 ```
 
-You'll need your charm to inherit from the `OpI` library class `ContentBase`:
+You'll need your charm to inherit from the `OpI` library class `ConfigManagerBase`:
 
 ```python
 # import ConfigManagerBase
