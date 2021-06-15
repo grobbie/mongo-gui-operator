@@ -23,7 +23,7 @@ juju add-model testing
 
 ```sh
 # get this code
-git clone https://github.com:grobbie/mongo-gui-operator.git
+git clone https://github.com/grobbie/mongo-gui-operator.git
 mv mongo-gui-operator opi
 pushd opi
 charmcraft build
